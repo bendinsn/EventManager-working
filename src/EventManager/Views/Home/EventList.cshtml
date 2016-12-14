@@ -1,0 +1,21 @@
+﻿@model IEnumerable<EventManager.Models.Event>
+
+@{
+    ViewData["Title"] = "Upcoming Events";
+}
+<h2>@ViewData["Title"].</h2>
+
+<table>
+    <thead>
+    <th>Genre Name</th>
+    </thead>
+    @foreach (var anEvent in Model)
+    {
+        <tr>
+            <td>
+                @anEvent.EventName;
+            </td>
+        </tr>
+
+    }
+</table>
