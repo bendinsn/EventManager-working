@@ -135,7 +135,7 @@ namespace EventManager.Controllers
 
         public IActionResult SubmitUserSearch(SearchByUserViewModel m)
         {
-            return RedirectToAction("EventListByArtist", m.ID);
+            return RedirectToAction("EventListByArtist", new { ID = m.ID });
         }
 
         public IActionResult EventDetails(int ID)
@@ -229,33 +229,33 @@ namespace EventManager.Controllers
             return RedirectToAction("EventList");
         }
 
-        [HttpPost]
-        public IActionResult AddToCalendar(int ID)
-        {
-            var events = context.Events.ToList();
-            Event _e = events.FirstOrDefault(x => x.EventID == ID);
-            var calendars = context.Calendars.ToList();
-            UserCalendar c = new UserCalendar
-            {
-                UserID = userManager.GetUserAsync(HttpContext.User).Result.UserName,
-                EventID = _e.EventID
-            };
-            calendars.Add(c);
-            context.SaveChanges();
-            return View("Index");
-        }
+        //[HttpPost]
+        //public IActionResult AddToCalendar(int ID)
+        //{
+        //    var events = context.Events.ToList();
+        //    Event _e = events.FirstOrDefault(x => x.EventID == ID);
+        //    var calendars = context.Calendars.ToList();
+        //    UserCalendar c = new UserCalendar
+        //    {
+        //        UserID = userManager.GetUserAsync(HttpContext.User).Result.UserName,
+        //        EventID = _e.EventID
+        //    };
+        //    calendars.Add(c);
+        //    context.SaveChanges();
+        //    return View("Index");
+        //}
 
-        public IActionResult MyCalendar(string ID)
-        {
-            var user = userManager.GetUserAsync(HttpContext.User).Result;
-            ViewBag.user = userManager.GetUserAsync(HttpContext.User).Result;
-            ViewBag.eventIDs = context.Calendars.Where(x => x.UserID == user.UserName).Select(x => x.EventID).ToList();
-            ViewBag.calendarView = true;
-            ViewBag.genres = context.Genres.ToList();
-            ViewBag.artists = context.Artists.ToList();
-            var events = context.Events.ToList();
-            return View("EventList", events);
-        }
+        //public IActionResult MyCalendar(string ID)
+        //{
+        //    var user = userManager.GetUserAsync(HttpContext.User).Result;
+        //    ViewBag.user = userManager.GetUserAsync(HttpContext.User).Result;
+        //    ViewBag.eventIDs = context.Calendars.Where(x => x.UserID == user.UserName).Select(x => x.EventID).ToList();
+        //    ViewBag.calendarView = true;
+        //    ViewBag.genres = context.Genres.ToList();
+        //    ViewBag.artists = context.Artists.ToList();
+        //    var events = context.Events.ToList();
+        //    return View("EventList", events);
+        //}
     }
 
 }
