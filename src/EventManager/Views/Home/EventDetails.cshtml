@@ -1,0 +1,18 @@
+﻿@model Event
+@{ 
+    ViewData["Title"] = "Event Details";
+    Event e = ViewBag.Event;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p><b>Event Name: </b>@e.EventName</p>
+<p><b>Artist: </b>@e.Artist.ClientName</p>
+<p><b>Date and Time: </b>@e.Time</p>
+<p><b>Genre: </b>@e.Genre.GenreName</p>
+<p><b>Venue: </b>@e.Venue</p>
+
+@if (ViewBag.isYours)
+{
+    <a asp-action="DeleteEvent" asp-controller="Home" class="btn btn-danger" asp-route-id=@e.EventID>DELETE</a>
+}

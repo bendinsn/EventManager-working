@@ -11,9 +11,6 @@ namespace EventManager.Models
         [Required]
         [Display(Name = "Event Name")]
         public string EventName { get; set; }
-        
-        [Required]
-        public ApplicationUser Artist { get; set; }
 
         [Required]
         [Display(Name = "Event Date")]
@@ -24,7 +21,7 @@ namespace EventManager.Models
 
         [Required]
         [Display(Name = "Genre")]
-        public Genre genre { get; set; }
+        public int GenreID { get; set; }
         
     }
 }

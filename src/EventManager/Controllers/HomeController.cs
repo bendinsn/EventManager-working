@@ -7,6 +7,7 @@ using EventManager.Data;
 using EventManager.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace EventManager.Controllers
 {
@@ -94,7 +95,8 @@ namespace EventManager.Controllers
                     Artist = await userManager.GetUserAsync(HttpContext.User),
                     EventName = model.EventName,
                     Time = model.Time,
-                    Venue = model.Venue
+                    Venue = model.Venue,
+                    GenreID = model.GenreID
                 };
                 var events = context.Events;
                 events.Add(newEvent);
@@ -107,6 +109,54 @@ namespace EventManager.Controllers
                 ViewBag.Color = "Red";
             }
             return View("Index");
+        }
+
+        public IActionResult EventList()
+        {
+            var events = context.Events.ToList();
+            ViewBag.genres = context.Genres.ToList();
+            ViewBag.artists = context.Artists.ToList();
+            return View(events);
+        }
+
+
+        public IActionResult EventDetails(int ID)
+        {
+            //ViewBag.ID = ID;
+            var events = context.Events;
+            Event e = context.Events.Where(x => x.EventID == ID).Include(x => x.Artist).Include(x => x.Genre).FirstOrDefault();
+            if (e == null)
+            {
+                ViewBag.Notification = "Something Went Wrong: No Such Event Found";
+                return View("Index");
+            }
+            ViewBag.isYours = false;
+            //ViewBag.Notification = "something went wrong: e.Artist is null. e.EventName is " + e.EventName;
+            //return View("Index");
+            if (e.Artist.Id == userManager.GetUserId(HttpContext.User))
+            {
+                ViewBag.isYours = true;
+            }
+            ViewBag.Event = e;
+            return View();
+        }
+
+        public IActionResult DeleteEvent(Event e)
+        {
+            return View();
+        }
+
+        public IActionResult DeleteConfirmed(int id)
+        {
+            foreach (Event e in context.Events)
+            {
+                if (e.EventID == id && e.Artist.Equals(userManager.GetUserAsync(HttpContext.User)))
+                {
+                    context.Events.Remove(e);
+                }
+            }
+            context.SaveChanges();
+            return RedirectToAction("EventList");
         }
     }
 }
