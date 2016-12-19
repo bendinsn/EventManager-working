@@ -16,22 +16,76 @@
     </thead>
     @foreach (var anEvent in Model)
     {
-        <tr>
-            <td>
-                <a asp-action="EventDetails" asp-controller="Home" asp-route-id=@anEvent.EventID>@anEvent.EventName</a>
-            </td>
-            <td>
-                @anEvent.Artist.ClientName
-            </td>
-            <td>
-                @anEvent.GenreID
-            </td>
-            <td>
-                @anEvent.Time  
-            </td>
-            <td>
-                @anEvent.Venue
-            </td>
-        </tr>
+        if (ViewBag.ID != null)
+        {
+            if (ViewBag.ID == anEvent.Artist.ClientName)
+            {
+                <tr>
+                    <td>
+                        <a asp-action="EventDetails" asp-controller="Home" asp-route-id=@anEvent.EventID>@anEvent.EventName</a>
+                    </td>
+                    <td>
+                        @anEvent.Artist.ClientName
+                    </td>
+                    <td>
+                        @anEvent.GenreID
+                    </td>
+                    <td>
+                        @anEvent.Time
+                    </td>
+                    <td>
+                        @anEvent.Venue
+                    </td>
+                </tr>
+            }
+        }
+        else if (ViewBag.calendarView == true)
+        {
+            if (ViewBag.EventIDs.Contains(anEvent.EventID))
+            {
+                <tr>
+                    <td>
+                        <a asp-action="EventDetails" asp-controller="Home" asp-route-id=@anEvent.EventID>@anEvent.EventName</a>
+                    </td>
+                    <td>
+                        @anEvent.Artist.ClientName
+                    </td>
+                    <td>
+                        @anEvent.GenreID
+                    </td>
+                    <td>
+                        @anEvent.Time
+                    </td>
+                    <td>
+                        @anEvent.Venue
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td>
+                    <a asp-action="EventDetails" asp-controller="Home" asp-route-id=@anEvent.EventID>@anEvent.EventName</a>
+                </td>
+                <td>
+                    @anEvent.Artist.ClientName
+                </td>
+                <td>
+                    @anEvent.GenreID
+                </td>
+                <td>
+                    @anEvent.Time
+                </td>
+                <td>
+                    @anEvent.Venue
+                </td>
+            </tr>
+        }
     }
 </table>
+
+
+
+
+<a asp-action="SearchByUser" asp-controller="Home" class="btn btn-success">Search By Artist</a>

@@ -63,6 +63,7 @@ namespace EventManager.Controllers
                 Logins = await _userManager.GetLoginsAsync(user),
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user)
             };
+            ViewBag.user = _userManager.GetUserAsync(HttpContext.User).Result;
             return View(model);
         }
 

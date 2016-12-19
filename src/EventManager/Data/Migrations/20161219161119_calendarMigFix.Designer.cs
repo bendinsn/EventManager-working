@@ -8,9 +8,10 @@ using EventManager.Data;
 namespace EventManager.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161219161119_calendarMigFix")]
+    partial class calendarMigFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
@@ -112,7 +113,7 @@ namespace EventManager.Data.Migrations
 
             modelBuilder.Entity("EventManager.Models.UserCalendar", b =>
                 {
-                    b.Property<int>("UserCalendarID")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("EventID");
@@ -120,7 +121,7 @@ namespace EventManager.Data.Migrations
                     b.Property<string>("UserID")
                         .IsRequired();
 
-                    b.HasKey("UserCalendarID");
+                    b.HasKey("ID");
 
                     b.ToTable("Calendars");
                 });

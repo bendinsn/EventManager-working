@@ -119,6 +119,24 @@ namespace EventManager.Controllers
             return View(events);
         }
 
+        public IActionResult EventListByArtist(string ID)
+        {
+            var events = context.Events.ToList();
+            ViewBag.genres = context.Genres.ToList();
+            ViewBag.artists = context.Artists.ToList();
+            ViewBag.ID = ID;
+            return View("EventList", events);
+        }
+
+        public IActionResult SearchByUser()
+        {
+            return View();
+        }
+
+        public IActionResult SubmitUserSearch(SearchByUserViewModel m)
+        {
+            return RedirectToAction("EventListByArtist", m.ID);
+        }
 
         public IActionResult EventDetails(int ID)
         {
@@ -141,22 +159,103 @@ namespace EventManager.Controllers
             return View();
         }
 
-        public IActionResult DeleteEvent(Event e)
+        public IActionResult DeleteEvent(int ID)
         {
+            var events = context.Events;
+            Event e = context.Events.Where(x => x.EventID == ID).Include(x => x.Artist).Include(x => x.Genre).FirstOrDefault();
+            if (e == null)
+            {
+                ViewBag.Notification = "Something Went Wrong: No Such Event Found";
+                return View("Index");
+            }
+            ViewBag.isYours = false;
+            //ViewBag.Notification = "something went wrong: e.Artist is null. e.EventName is " + e.EventName;
+            //return View("Index");
+            if (e.Artist.Id == userManager.GetUserId(HttpContext.User))
+            {
+                ViewBag.isYours = true;
+            }
+            ViewBag.Event = e;
             return View();
         }
 
-        public IActionResult DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int ID)
         {
-            foreach (Event e in context.Events)
-            {
-                if (e.EventID == id && e.Artist.Equals(userManager.GetUserAsync(HttpContext.User)))
-                {
-                    context.Events.Remove(e);
-                }
-            }
+            Event e = context.Events.Where(x => x.EventID == ID).Include(x => x.Artist).Include(x => x.Genre).FirstOrDefault();
+            context.Events.Remove(e);
             context.SaveChanges();
             return RedirectToAction("EventList");
         }
+
+        public async Task<IActionResult> EditEvent(int ID)
+        {
+            Event e = context.Events.Where(x => x.EventID == ID).Include(x => x.Artist).Include(x => x.Genre).FirstOrDefault();
+            ViewBag.Event = e;
+            ViewBag.genres = context.Genres.ToList();
+
+            var user = await userManager.GetUserAsync(HttpContext.User);
+            ViewBag.isYours = true;
+            if (!user.UserName.Equals(e.Artist.UserName)) //Don't let anyone but artists register new events.
+            {
+                ViewBag.isYours = false;
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditEvent(NewEventViewModel evm, int ID)
+        {
+            var user = await userManager.GetUserAsync(HttpContext.User);
+            ViewBag.genres = context.Genres.ToList();
+
+            var events = context.Events.ToList();
+            Event e = events.FirstOrDefault(x => x.EventID == ID);
+
+            if (e.Artist.UserName == user.UserName)
+            {
+                e.EventName = evm.EventName;
+                e.Artist = user;
+                e.GenreID = evm.GenreID;
+                e.Time = evm.Time;
+                e.Venue = evm.Venue;
+                ViewBag.Notification = "Event Data Changed.";
+            }else
+            {
+                ViewBag.Notification = "You do not have access to edit this event.";
+            }
+            context.SaveChanges();
+
+            return RedirectToAction("EventList");
+        }
+
+        [HttpPost]
+        public IActionResult AddToCalendar(int ID)
+        {
+            var events = context.Events.ToList();
+            Event _e = events.FirstOrDefault(x => x.EventID == ID);
+            var calendars = context.Calendars.ToList();
+            UserCalendar c = new UserCalendar
+            {
+                UserID = userManager.GetUserAsync(HttpContext.User).Result.UserName,
+                EventID = _e.EventID
+            };
+            calendars.Add(c);
+            context.SaveChanges();
+            return View("Index");
+        }
+
+        public IActionResult MyCalendar(string ID)
+        {
+            var user = userManager.GetUserAsync(HttpContext.User).Result;
+            ViewBag.user = userManager.GetUserAsync(HttpContext.User).Result;
+            ViewBag.eventIDs = context.Calendars.Where(x => x.UserID == user.UserName).Select(x => x.EventID).ToList();
+            ViewBag.calendarView = true;
+            ViewBag.genres = context.Genres.ToList();
+            ViewBag.artists = context.Artists.ToList();
+            var events = context.Events.ToList();
+            return View("EventList", events);
+        }
     }
+
 }

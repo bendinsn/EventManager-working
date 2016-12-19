@@ -1,6 +1,8 @@
 ﻿@model IndexViewModel
+@using EventManager.Models
 @{
     ViewData["Title"] = "Manage your account";
+    ApplicationUser user = ViewBag.user;
 }
 
 <h2>@ViewData["Title"].</h2>
@@ -25,7 +27,7 @@
         </dd>
         <dt>External Logins:</dt>
         <dd>
-            @Model.Logins.Count <a asp-controller="Manage" asp-action="ManageLogins" class="btn-bracketed">Manage</a>
+            @Model.Logins.Count <a asp-controller="Manage" asp-action="ManageLogins" class="btn btn-bracketed">Manage</a>
         </dd>
         <dt>Phone Number:</dt>
         <dd>
@@ -70,11 +72,13 @@
 
         <dt>My Events</dt>
         <dd>
-            @if(Model.IsArtist)
+            @if (Model.IsArtist)
             {
                 <p><a asp-controller="Home" asp-action="NewEvent">Create New Event</a></p>
+                <p><a asp-controller="Home" asp-action="EventListByArtist" asp-route-id="@user.ClientName">Events You're Running</a></p>
 
             }
+            <p><a asp-controller="Home" asp-action="MyCalendar">View Your Calendar</a></p>
 
         </dd>
     </dl>

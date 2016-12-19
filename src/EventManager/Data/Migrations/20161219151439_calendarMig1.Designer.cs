@@ -8,9 +8,10 @@ using EventManager.Data;
 namespace EventManager.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161219151439_calendarMig1")]
+    partial class calendarMig1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
@@ -112,15 +113,45 @@ namespace EventManager.Data.Migrations
 
             modelBuilder.Entity("EventManager.Models.UserCalendar", b =>
                 {
-                    b.Property<int>("UserCalendarID")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("AccessFailedCount");
+
+                    b.Property<string>("ConcurrencyStamp");
+
+                    b.Property<string>("Email");
+
+                    b.Property<bool>("EmailConfirmed");
+
                     b.Property<int>("EventID");
+
+                    b.Property<bool>("LockoutEnabled");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd");
+
+                    b.Property<string>("NormalizedEmail");
+
+                    b.Property<string>("NormalizedUserName");
+
+                    b.Property<string>("PasswordHash");
+
+                    b.Property<string>("PhoneNumber");
+
+                    b.Property<bool>("PhoneNumberConfirmed");
+
+                    b.Property<string>("SecurityStamp");
+
+                    b.Property<bool>("TwoFactorEnabled");
 
                     b.Property<string>("UserID")
                         .IsRequired();
 
-                    b.HasKey("UserCalendarID");
+                    b.Property<string>("UserName");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventID");
 
                     b.ToTable("Calendars");
                 });
@@ -175,10 +206,14 @@ namespace EventManager.Data.Migrations
 
                     b.Property<string>("ClaimValue");
 
+                    b.Property<string>("UserCalendarId");
+
                     b.Property<string>("UserId")
                         .IsRequired();
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserCalendarId");
 
                     b.HasIndex("UserId");
 
@@ -193,10 +228,14 @@ namespace EventManager.Data.Migrations
 
                     b.Property<string>("ProviderDisplayName");
 
+                    b.Property<string>("UserCalendarId");
+
                     b.Property<string>("UserId")
                         .IsRequired();
 
                     b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserCalendarId");
 
                     b.HasIndex("UserId");
 
@@ -209,9 +248,13 @@ namespace EventManager.Data.Migrations
 
                     b.Property<string>("RoleId");
 
+                    b.Property<string>("UserCalendarId");
+
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("UserCalendarId");
 
                     b.ToTable("AspNetUserRoles");
                 });
@@ -243,6 +286,14 @@ namespace EventManager.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("EventManager.Models.UserCalendar", b =>
+                {
+                    b.HasOne("EventManager.Models.Event", "e")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole")
@@ -253,6 +304,10 @@ namespace EventManager.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<string>", b =>
                 {
+                    b.HasOne("EventManager.Models.UserCalendar")
+                        .WithMany("Claims")
+                        .HasForeignKey("UserCalendarId");
+
                     b.HasOne("EventManager.Models.ApplicationUser")
                         .WithMany("Claims")
                         .HasForeignKey("UserId")
@@ -261,6 +316,10 @@ namespace EventManager.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<string>", b =>
                 {
+                    b.HasOne("EventManager.Models.UserCalendar")
+                        .WithMany("Logins")
+                        .HasForeignKey("UserCalendarId");
+
                     b.HasOne("EventManager.Models.ApplicationUser")
                         .WithMany("Logins")
                         .HasForeignKey("UserId")
@@ -273,6 +332,10 @@ namespace EventManager.Data.Migrations
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("EventManager.Models.UserCalendar")
+                        .WithMany("Roles")
+                        .HasForeignKey("UserCalendarId");
 
                     b.HasOne("EventManager.Models.ApplicationUser")
                         .WithMany("Roles")

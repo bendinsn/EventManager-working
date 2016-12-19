@@ -15,4 +15,8 @@
 @if (ViewBag.isYours)
 {
     <a asp-action="DeleteEvent" asp-controller="Home" class="btn btn-danger" asp-route-id=@e.EventID>DELETE</a>
+    <a asp-action="EditEvent" asp-controller="Home" class="btn btn-success" asp-route-id=@e.EventID>EDIT</a>
 }
+<form asp-action="AddToCalendar" asp-controller="Home" asp-route-id=@e.EventID asp-route-returnurl="@ViewData["ReturnUrl"]">
+    <input type="submit" value="Add To Your Calendar" class="btn btn-default" />
+</form>
